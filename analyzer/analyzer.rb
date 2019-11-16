@@ -16,7 +16,7 @@ def calculate_point(sentence, nodes)
     "早かった" => 0.5, "早い" => 0.5,
     "まだ" => 0.2, "全然" => 0.2, "青葉" => 0,
     "色付き始め" => 0.5, "色づき始め" => 0.5, "色付きはじめ" => 0.5, "色づきはじめ" => 0.5,
-    "見頃" => 1, "見頃は" => 0.5, "見頃予想" => 0,
+    "見頃" => 1, "見ごろ" => 1, "見頃は" => 0.5, "見頃予想" => 0,
     "終わり" => 2, "色あせ" => 1.5, "色褪せ" => 1.5, "散り始め" => 1.5
   }
 
@@ -33,7 +33,7 @@ end
 def parse_and_calculate(sentence)
   nodes = @nm.enum_parse(sentence)
 
-  places = nodes.select { |node| node.feature =~ /固有名詞\t(地域|一般)/ }.map { |node| node.surface }.select { |surface| surface !~ /[ -~｡-ﾟ]/ }
+  places = nodes.select { |node| node.feature =~ /固有名詞\t(地域|一般)/ }.map { |node| node.surface }.select { |surface| surface !~ /[ -~｡-ﾟ]/ && surface =~ /[一-龠々]/ }
   return [] if places.empty?
 
   point = calculate_point(sentence, nodes)
