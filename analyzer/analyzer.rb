@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'natto'
+require 'json'
 
 @nm = Natto::MeCab.new('--node-format=%f[1]\t%f[2]')
 
@@ -42,13 +43,41 @@ def parse_and_calculate(sentence)
   places.map { |place| [place, point] }
 end
 
+def convert_score(score)
+  if score >= 1.5
+    '落葉'
+  elsif score > 1.2
+    '落葉始め'
+  elsif score > 0.8
+    '見頃'
+  elsif score > 0.6
+    '見頃近し'
+  elsif score > 0.4
+    '色づき始め'
+  else
+    '青葉'
+  end
+end
+
+results = {}
+
 STDIN.each { |line|
   items = line.chomp.split(/,/, 3)
+  next if items.size != 3
+
   places = parse_and_calculate(items[2])
 
   if !places.empty?
-    puts items[2]
-    puts "=>" + places.map { |point| point.join(',') }.join('/')
+    places.each { |place|
+      results[place[0]] = [] if !results.has_key?(place[0])
+      results[place[0]] << place[1]
+    }
   end
 }
+
+place_scores = results.map { |place, scores|
+  [place, { score: scores.sum.to_f / scores.size, score_text: convert_score(scores.sum.to_f / scores.size), scores: scores }]
+}.select { |e| e[1][:scores].size >= 2 }.to_h
+
+puts place_scores.to_json
 
