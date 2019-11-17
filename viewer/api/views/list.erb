@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ソーシャル紅葉見頃</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1>ソーシャル紅葉見頃</h1>
+        </div>
+      </div>
+      <div class="row">
+        <% @list.each { |item|
+          place = item[0]
+          place_info = item[1]
+        %>
+          <div class="col-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><%= place %> <small><%= place_info["score_text"] %>(<%= sprintf("%.2f", place_info["score"]) %>)</small></h5>
+                <% if place_info["guess_prefecture"] %>
+                  <h6 class="card-subtitle mb-2 text-muted"><%= place_info["guess_prefecture"] %><%= place_info["guess_prefecture_accuracy"] < 0.5 ? "？" : "" %> / 言及数: <%= place_info["scores"].size %></h6>
+                <% end %>
+                <!--
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <a href="#" class="card-link">Card link</a>
+                  <a href="#" class="card-link">Another link</a>
+                -->
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
