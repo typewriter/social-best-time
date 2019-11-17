@@ -15,6 +15,6 @@ client = Twitter::REST::Client.new(
 result_tweets = client.search("紅葉 OR 見頃 OR 見ごろ OR 色づき OR 落葉 OR @DummyScreenNameToAvoidSearchingByUserName", count: 100, result_type: "recent",  exclude: "retweets")
 
 result_tweets.take(100).each { |tweet|
-  puts "#{tweet.created_at},#{tweet.user.screen_name},#{tweet.user.id},#{tweet.id},#{tweet.full_text.gsub(/,/,"，").gsub(/\n/m, "<br>")}"
+  puts "#{tweet.created_at},#{tweet.user.screen_name},#{tweet.user.id},#{tweet.id},#{tweet.media.size},#{tweet.full_text.gsub(/,/,"，").gsub(/\n/m, "<br>")}"
 }
 

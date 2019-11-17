@@ -66,18 +66,24 @@ end
 results = {}
 
 STDIN.each { |line|
-  items = line.chomp.split(/,/, 5)
+  items = line.chomp.split(/,/, 6)
 
+  message = nil
   tweet = {}
   if items.size == 3
+    message = items[2]
     tweet = { created_at: Time.parse(items[0]).getlocal, screen_name: items[1], text: items[2] }
   elsif items.size == 5
+    message = items[4]
     tweet = { created_at: Time.parse(items[0]).getlocal, screen_name: items[1], user_id: items[2], tweet_id: items[3], text: items[4] }
+  elsif items.size == 6
+    message = items[5]
+    tweet = { created_at: Time.parse(items[0]).getlocal, screen_name: items[1], user_id: items[2], tweet_id: items[3], media: items[4], text: items[5] }
   else
     next
   end
 
-  places = parse_and_calculate(items[2])
+  places = parse_and_calculate(message)
 
   if !places.empty?
     places.each { |place|
