@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <title>ソーシャル紅葉見頃</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ソーシャル紅葉見頃情報 <%= @pref ? " - #{@pref}の情報" : "" %></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <h2>ソーシャル紅葉見頃 <span class="text-muted"><small><%= @@time.strftime("%Y/%m/%d %H:%M") %>更新</small></span></h2>
+          <h2>ソーシャル紅葉見頃情報<%= @pref ? "＠#{@pref}" : "" %> <small class="text-muted"><%= @@time.strftime("%Y/%m/%d %H:%M") %>更新 <span class="badge badge-pill badge-dark">Rule-based AI powered</span></small></h2>
+          <p>
+            <strong>都道府県で絞り込み</strong><br>
+            <a href="/">全国（絞り込み解除）</a><small>
+            <% %w(北海道 青森 岩手 宮城 秋田 山形 福島 茨城 栃木 群馬 埼玉 千葉 東京 神奈川 新潟 富山 石川 福井 山梨 長野 岐阜 静岡 愛知 三重 滋賀 京都 大阪 兵庫 奈良 和歌山 鳥取 島根 岡山 広島 山口 徳島 香川 愛媛 高知 福岡 佐賀 長崎 熊本 大分 宮崎 鹿児島 沖縄).each { |pref| %>
+              / <a href="/<%= pref %>"><%= pref %></a>
+            <% } %>
+            </small>
+          </p>
         </div>
       </div>
       <div class="row">
@@ -16,17 +25,19 @@
           place = item[0]
           place_info = item[1]
         %>
-          <div class="col-12 col-sm-6 col-md-4">
+          <div class="col-12 col-md-6 col-xl-4">
             <div class="card">
-              <div class="card-body">
-                <h5 class="card-title"><%= place %> <span style="color: #<%=
-                  score = place_info["score"]
+              <%
+                score = place_info["score"]
+                color =
                   if score > 1.0
                     [220 - (115 * (score-1)), 20 + (85 * (score-1)), 60 + (45 * (score-1))].map { |e| sprintf("%02x", e) }.join('')
                   else
                     [220 * score, 228 - (208 * score), 60 * score].map { |e| sprintf("%02x", e) }.join('')
                   end
-                %>;"><small><%= place_info["score_text"] %>(<%= sprintf("%.2f", place_info["score"]) %>)</small></span></h5>
+              %>
+              <h5 class="card-header" style="color: #<%= color %>;"><%= place %> <span><small><%= place_info["score_text"] %></small></span></h5>
+              <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">
                   <% if place_info["guess_prefecture"] %>
                     <%= place_info["guess_prefecture"] %><%= place_info["guess_prefecture_accuracy"] < 0.5 ? "？" : "" %>
@@ -35,6 +46,9 @@
                   <% end %>
                   / 言及数: <%= place_info["scores"].size %>
                 </h6>
+                <% place_info["tweets"].uniq.select { |e| e["tweet_id"] }.sort_by { |e| "#{e["media"] || 0}#{e["created_at"]}" }.reverse.take(2).each { |tweet| %>
+                  <blockquote class="twitter-tweet"><a href="https://twitter.com/<%= tweet["screen_name"] %>/status/<%= tweet["tweet_id"] %>"></a></blockquote>
+                <% } %>
                 <!--
                   <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                   <a href="#" class="card-link">Card link</a>
@@ -46,5 +60,11 @@
         <% } %>
       </div>
     </div>
+    <div class="bg-light" style="position: fixed; left: auto; bottom: 0; padding: 0 5px; width: 100%;">
+      <p class="text-muted font-weight-lighter"><small>
+        機械判定のため，都道府県名やスポット名に不備がある場合があります．
+      </small></p>
+    </div>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </body>
 </html>
