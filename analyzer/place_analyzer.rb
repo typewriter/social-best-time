@@ -77,8 +77,8 @@ STDIN.each { |line|
 
 place_prefs = results.map { |place, pref_candidates|
   pref_counts = pref_candidates.group_by { |pref| pref }.map { |pref, array| [pref, array.size] }.to_h
-  pref = pref_counts.max_by { |e| e[1] }[0]
-  [place, { guess_prefecture: pref, samples: pref_counts }]
+  pref = pref_counts.max_by { |e| e[1] }
+  [place, { guess_prefecture: pref[0], guess_prefecture_accuracy: pref[1].to_f / pref_candidates.size, samples: pref_counts }]
 }.to_h
 
 puts place_prefs.to_json

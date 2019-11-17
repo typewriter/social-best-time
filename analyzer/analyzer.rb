@@ -2,6 +2,7 @@
 
 require 'natto'
 require 'json'
+require 'time'
 
 @nm = Natto::MeCab.new('--node-format=%f[1]\t%f[2]')
 
@@ -37,7 +38,7 @@ end
 def parse_and_calculate(sentence)
   nodes = @nm.enum_parse(sentence)
 
-  places = nodes.select { |node| node.feature =~ /固有名詞\t(地域|一般)/ }.map { |node| node.surface }.select { |surface| surface !~ /[ -~｡-ﾟ]/ && surface =~ /[一-龠々]/ }
+  places = nodes.select { |node| node.feature =~ /固有名詞\t(一般)/ }.map { |node| node.surface }.select { |surface| surface !~ /[ -~｡-ﾟ]/ && surface =~ /[一-龠々]/ }.uniq
   return [] if places.empty?
 
   point = calculate_point(sentence, nodes)
@@ -51,9 +52,9 @@ def convert_score(score)
     '落葉'
   elsif score > 1.2
     '落葉始め'
-  elsif score > 0.8
+  elsif score > 0.85
     '見頃'
-  elsif score > 0.6
+  elsif score > 0.7
     '見頃近し'
   elsif score > 0.4
     '色づき始め'
@@ -65,21 +66,41 @@ end
 results = {}
 
 STDIN.each { |line|
-  items = line.chomp.split(/,/, 3)
-  next if items.size != 3
+  items = line.chomp.split(/,/, 5)
+
+  tweet = {}
+  if items.size == 3
+    tweet = { created_at: Time.parse(items[0]).getlocal, screen_name: items[1], text: items[2] }
+  elsif items.size == 5
+    tweet = { created_at: Time.parse(items[0]).getlocal, screen_name: items[1], user_id: items[2], tweet_id: items[3], text: items[4] }
+  else
+    next
+  end
 
   places = parse_and_calculate(items[2])
 
   if !places.empty?
     places.each { |place|
-      results[place[0]] = [] if !results.has_key?(place[0])
-      results[place[0]] << place[1]
+      results[place[0]] = { scores: [], tweets: [] } if !results.has_key?(place[0])
+      results[place[0]][:scores] << place[1]
+      results[place[0]][:tweets] << tweet.merge({ score: place[1] })
     }
   end
 }
 
-place_scores = results.map { |place, scores|
-  [place, { score: scores.sum.to_f / scores.size, score_text: convert_score(scores.sum.to_f / scores.size), scores: scores }]
+# 補足情報がある場合はマージ
+if ARGV[0] && File.exist?(ARGV[0])
+  place_supplements = JSON.parse(File.read(ARGV[0]))
+  results.each { |place, result|
+    if place_supplements.has_key?(place)
+      result.merge!(place_supplements[place])
+    end
+  }
+end
+
+place_scores = results.map { |place, result|
+  score = result[:scores].sum.to_f / result[:scores].size
+  [place, result.merge({ score: score, score_text: convert_score(score) })]
 }.select { |e| e[1][:scores].size >= 2 }.to_h
 
 puts place_scores.to_json
