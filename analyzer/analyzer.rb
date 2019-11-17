@@ -13,15 +13,18 @@ def calculate_point(sentence, nodes)
   # 2: 落葉
 
   point_map = {
-    /青葉/ => 0, /全然/ => 0.1, /まだ/ => 0.2,
+    /青葉/ => 0, /全然/ => 0.1, /まだ/ => 0.2, /遅い/ => 0.4, /これから/ => 0.4,
     /(はや|早|速)(い|かった)/ => 0.4,
     /色[づ付]き/ => 0.4,
+    /初め[^て]/ => 0.5,
     /一部/ => 0.6,
     /(あと|もう)少し/ => 0.7, /(あと|もう)ちょっと/ => 0.8,
     /そろそろ|もうすぐ/ => 0.8,
     /ちょうど/ => 1, /見(頃|ごろ)[^は予]/ => 1,
+    /終盤/ => 1.2,
+    /過ぎ/ => 1.4,
+    /落葉[は始]/ => 1.5, /遅かった/ => 1.5,
     /(ちょっと|少し)遅かった/ => 1.5, /色(褪|あ)せ/ => 1.5, /(散|ち)り(始|はじ)め/ => 1.5,
-    /落葉[は始]/ => 1.5,
     /落葉[^は始]/ => 2, /終わり/ => 2, /終わって/ => 2, /散って/ => 2
   }
 
@@ -38,7 +41,11 @@ end
 def parse_and_calculate(sentence)
   nodes = @nm.enum_parse(sentence)
 
-  places = nodes.select { |node| node.feature =~ /固有名詞\t(一般)/ }.map { |node| node.surface }.select { |surface| surface !~ /[ -~｡-ﾟ]/ && surface =~ /[一-龠々]/ }.uniq
+  places = nodes.
+    select { |node| node.feature =~ /固有名詞\t(一般)/ }.
+    map { |node| node.surface }.
+    select { |surface| surface !~ /[ -~｡-ﾟ]/ && surface =~ /[一-龠々]/ }.
+    uniq
   return [] if places.empty?
 
   point = calculate_point(sentence, nodes)
