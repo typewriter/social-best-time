@@ -90,6 +90,8 @@ STDIN.each { |line|
     next
   end
 
+  next if (Time.now - tweet[:created_at]) > 24 * 60 * 60 * 4
+
   places = parse_and_calculate(message)
 
   if !places.empty?
