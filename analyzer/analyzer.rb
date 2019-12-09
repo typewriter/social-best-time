@@ -55,9 +55,9 @@ def parse_and_calculate(sentence)
 end
 
 def convert_score(score)
-  if score >= 1.5
+  if score >= 1.4
     '落葉'
-  elsif score > 1.2
+  elsif score > 1.1
     '落葉始め'
   elsif score > 0.85
     '見頃'
