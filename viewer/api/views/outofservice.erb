@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ソーシャル紅葉見頃情報 <%= @pref ? " - #{@pref}の情報" : "" %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ソーシャル紅葉見頃情報 <%= @pref ? " - #{@pref}の情報" : "" %>" />
+    <meta property="og:image" content="https://koyo.nyamikan.net/images/20161114_PB140262-1024x768.jpg" />
+    <meta property="og:url" content="https://koyo.nyamikan.net/<%= @pref ? URI.encode(@pref) : "" %>" />
+    <meta property="og:description" content="<%= @pref || "各地" %>の紅葉見頃情報をお届け！" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h2>ソーシャル紅葉見頃情報<%= @pref ? "＠#{@pref}" : "" %></h2>
+          <strong>提供期間外</strong>
+          <p>
+          本サービスは、9月1日〜12月20日に提供します。<br><br>
+          提供イメージ<br>
+          <img src="images/koyo_example.png" class="img-fluid border rounded-lg">
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-light" style="position: fixed; left: auto; bottom: 0; padding: 0 5px; width: 100%;">
+      <p class="text-muted font-weight-lighter"><small>
+        機械判定のため，都道府県名やスポット名に不備がある場合があります．
+      </small></p>
+    </div>
+  </body>
+</html>

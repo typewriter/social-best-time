@@ -12,6 +12,10 @@ require 'uri'
 @@time = File.mtime('../../analyzer/results.json')
 
 get '/:pref?' do
+  if Time.now.strftime('%m%d') < '0901' || Time.now.strftime('%m%d') > '1220'
+    return erb :outofservice
+  end
+
   list = @@json.to_a
   if params[:pref]
     @pref = params[:pref]
