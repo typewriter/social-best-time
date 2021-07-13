@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     buftok (0.2.0)
     domain_name (0.5.20190701)
@@ -24,7 +24,7 @@ GEM
     natto (1.1.2)
       ffi (>= 1.9.0)
     naught (1.1.0)
-    public_suffix (4.0.2)
+    public_suffix (4.0.6)
     simple_oauth (0.3.1)
     thread_safe (0.3.6)
     twitter (6.2.0)
